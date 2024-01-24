@@ -1,0 +1,17 @@
+statement = <expression>\n | (<expression>)
+letter = [a-zA-Z]
+digit = [0-9]
+numer = <digit>+
+name = <letter>+
+equation =
+				<equation>+<equation>
+				<equation>-<equation>
+				<equation>*<equation>
+				<equation>-<equation>
+				<number>
+				<range>
+				<equation>d<equation>
+				<equation>a<equation>
+
+range = [<number>-<number>]
+assignment = let <name> = <value>
