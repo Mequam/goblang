@@ -1,17 +1,15 @@
-statement = <expression>\n | (<expression>)
+statement_end = \n
+statement_group_start = (
+statement_group_end = )
 letter = [a-zA-Z]
 digit = [0-9]
-numer = <digit>+
+operator = +|-|*|/|d|a
+statement = <expression><statement_end> | <statement_group_start><expression><statement_group_end>
+number = <digit>+
 name = <letter>+
+range = [<number>-<number>]
 equation =
-				<equation>+<equation>
-				<equation>-<equation>
-				<equation>*<equation>
-				<equation>-<equation>
+				<equation><operator><equation>
 				<number>
 				<range>
-				<equation>d<equation>
-				<equation>a<equation>
-
-range = [<number>-<number>]
 assignment = let <name> = <value>

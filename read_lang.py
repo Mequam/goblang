@@ -5,7 +5,7 @@ def remove_comments(data : str)->str:
     return data.split("#")[0]
 
 
-#generates a token setup for a given language file
+#generates a dictionary of rules based on a given .lang file
 def create_parse_tree(path : str):
     continuation = re.compile("\\s+.+")
 
@@ -19,7 +19,10 @@ def create_parse_tree(path : str):
                 continue
 
             if continuation.match(line):
-                ret_val[last_entry] += "|"+line.lstrip()
+                #include the seperator
+                if ret_val[last_entry] != "": ret_val[last_entry]+= "|"
+
+                ret_val[last_entry] += line.strip()
                 continue
             
             split_data = line.split('=')
@@ -28,14 +31,21 @@ def create_parse_tree(path : str):
             if split_data[1] == "":
                 add_to = split_data[1]
 
-            ret_val[split_data[0]] = split_data[1]
+            ret_val[split_data[0]] = split_data[1].strip()
 
             last_entry = split_data[0]
         else:
             print("end of the file")
-        
-        
-        return ret_val
+
+
+        return { key:ret_val[key].split("|") for key in ret_val}
+
+#gernates a function to be used as a lexical analyis from a given
+#rule tree
+#def create_lexer(rules):
+#    for key in rules:
+#        if rules[key]
+
 
 
 
