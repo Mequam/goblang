@@ -27,7 +27,6 @@ class Mappings:
 
         if not "<" in work_string or not ">" in work_string:
             raise StopIteration
-        print("\t"+work_string)
         start = work_string.index("<") + self.idx
         end = work_string.index(">") + self.idx
         self.idx = end + 1
@@ -105,13 +104,15 @@ def create_lexim_map(lexims):
     return ret_val
 
 
-
-#returns a dictionary mapping between a set of rule names and rules
-#inteanded for further processing
+#generates a regex along with the mappings that the regex matches
 def get_rule_mapping_data(rule):
-    for x in Mappings(rule):
-        print(x)
-    return ""
+    mappings = []
+    error = 0
+    for mapping,start,end in Mappings(rule):
+        rule = rule[0:start-error] +".*"+rule[end-error+1:]
+        mappings.append((mapping,start-error))
+        error += len(mapping) #account for index differences
+    return (rule,mappings)
 
 
 #def create_rule_map(maps):
@@ -133,9 +134,10 @@ if __name__ == '__main__':
     maps = get_mappings(data)
 
     lexim_nodes = create_lexim_map(lexims)
-    print([
+    for value in ([
             [get_rule_mapping_data(rule) for rule in maps[key]]
-            for key in maps])
+            for key in maps]):
+        print(value)
 
     
     print('[*] finished!')
