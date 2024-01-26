@@ -15,6 +15,24 @@ class ParseNode:
             ret_val += str(r) + " , "
         return ret_val[0:-3]
 
+#convinence class to iterate through a rule containing several mappings
+class Mappings:
+    def __init__(self,string : str):
+        self._data = string
+        self.idx = 0
+    def __iter__(self):
+        return self
+    def __next__(self):
+        work_string = self._data[self.idx:]
+
+        if not "<" in work_string or not ">" in work_string:
+            raise StopIteration
+        print("\t"+work_string)
+        start = work_string.index("<") + self.idx
+        end = work_string.index(">") + self.idx
+        self.idx = end + 1
+
+        return (self._data[start+1:end],start,end)
 
 #generates a dictionary of rules based on a given .lang file
 #very rudimentary, inteanded for further parsing
@@ -86,8 +104,16 @@ def create_lexim_map(lexims):
     
     return ret_val
 
-#TODO: get the rule mappings working
-#def 
+
+
+#returns a dictionary mapping between a set of rule names and rules
+#inteanded for further processing
+def get_rule_mapping_data(rule):
+    for x in Mappings(rule):
+        print(x)
+    return ""
+
+
 #def create_rule_map(maps):
 #    ret_val = {}
 #    
@@ -107,7 +133,9 @@ if __name__ == '__main__':
     maps = get_mappings(data)
 
     lexim_nodes = create_lexim_map(lexims)
-    print([str(lexim_nodes[key]) for key in lexim_nodes])
+    print([
+            [get_rule_mapping_data(rule) for rule in maps[key]]
+            for key in maps])
 
     
     print('[*] finished!')
