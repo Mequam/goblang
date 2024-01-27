@@ -115,16 +115,15 @@ def get_rule_mapping_data(rule):
     return (rule,mappings)
 
 
-#def create_rule_map(maps):
-#    ret_val = {}
-#    
-#    for key in lexims:
-#        lexim_node = ParseNode(key)
-#        for rule in lexims[key]:
-#            lexim_node.rules.append(rule)
-#        ret_val[key] = lexim_node
-#    
-#    return ret_val
+def create_rule_map(maps):
+    ret_val = {}
+    
+    for key in maps:
+        rule_map = ParseNode(key)
+        rule_map.rules = [get_rule_mapping_data(rule) for rule in maps[key]]
+        ret_val[key] = rule_map
+
+    return ret_val
 
 if __name__ == '__main__':
     print('[*] generating the parse tree')
@@ -134,10 +133,14 @@ if __name__ == '__main__':
     maps = get_mappings(data)
 
     lexim_nodes = create_lexim_map(lexims)
-    for value in ([
-            [get_rule_mapping_data(rule) for rule in maps[key]]
-            for key in maps]):
-        print(value)
+    #for value in ([
+    #        [get_rule_mapping_data(rule) for rule in maps[key]]
+    #        for key in maps]):
+    map_nodes = create_rule_map(maps)
+    for r in map_nodes:
+        print(r)
+        print(map_nodes[r])
+        print("-")
 
     
     print('[*] finished!')
