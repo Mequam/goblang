@@ -125,23 +125,47 @@ def create_rule_map(maps):
 
     return ret_val
 
+#updates the mappings for a given map node to point to the mapping in a given context
+def translate_mappings_to_pointers(map_node_to_translate,lexim_nodes,map_nodes):
+        pointer_rule = []
+        for regex,mapps in map_node_to_translate.rules:
+            pointer_mapps = []
+            for mapping,start in mapps:
+                if mapping in map_nodes:
+                    pointer_mapps.append((map_nodes[mapping],start))
+                else:
+                    pointer_mapps.append((lexim_nodes[mapping],start))
+            pointer_rule.append((regex,pointer_mapps))
+        map_node_to_translate.rules = pointer_rule
+
+#generates a final self referential data structure
+#where each node points to other nodes for a context
+#free grammer
+def create_mapping_mesh(lexim_nodes,map_nodes):
+    #lexim nodes do not point to anything, so we can plop them right down in the data structure
+    ret_val = [lexim_nodes[key] for key in lexim_nodes]
+
+    #for the given map node, any reference of it that is inside of the new array
+    for key in map_nodes:
+        translate_mappings_to_pointers(map_nodes[key],lexim_nodes,map_nodes)
+        ret_val.append(map_nodes[key])
+    
+    return ret_val
+
+
+
+
 if __name__ == '__main__':
     print('[*] generating the parse tree')
     data = get_parse_dictionary("./example.lang")
     
     lexims = get_lexims(data)
     maps = get_mappings(data)
+    print(maps)
 
     lexim_nodes = create_lexim_map(lexims)
-    #for value in ([
-    #        [get_rule_mapping_data(rule) for rule in maps[key]]
-    #        for key in maps]):
+    print([key for key in lexim_nodes])
     map_nodes = create_rule_map(maps)
-    for r in map_nodes:
-        print(r)
-        print(map_nodes[r])
-        print("-")
 
-    
-    print('[*] finished!')
+    print(create_mapping_mesh(lexim_nodes,map_nodes))
 

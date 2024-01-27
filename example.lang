@@ -1,3 +1,5 @@
+#entry <statement>
+
 name = [a-zA-Z]+
 const = [0-9]+
 opperator = \+|-|/|\*
@@ -5,4 +7,4 @@ opperator = \+|-|/|\*
 statement = <expr>\n|(<expr>)
 expr = <assign>|<equation>
 assign = <name> = <equation>
-equation = <equation><operator><equation>|<const>|<name>
+equation = <equation><opperator><equation>|<const>|<name>
