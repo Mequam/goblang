@@ -4,10 +4,59 @@ import re
 def remove_comments(data : str)->str:
     return data.split("#")[0]
 
+
+#single entry in the final parse tree
+class GrammerNode:
+    def __init__(self,token : 'ParseNode',match : re.Match,sub_tokens = []):
+        self.token = token
+        self.match = match
+
+#represents an idea that we can place in the parse tree
 class ParseNode:
     def __init__(self,name):
         self.name = name
         self.rules = []
+    
+    def is_lexim(self)->bool:
+        for r in self.rules:
+            if not type(r) == re.Pattern:
+                return False
+        return True
+    
+    def get_lexims(self):
+        if self.is_lexim():
+            return [self]
+        ret_val = []
+        return ret_val
+
+    def match(self,data : str)->'GrammerNode':
+        #simply match and return if valid
+        if self.is_lexim():
+            for r in self.rules:
+                match = re.compile("^"+r.pattern+"$").match(data)
+                if match:
+                    g = GrammerNode(self,match)
+                    print(self.name + " matched with ")
+                    print(g)
+                    print(r)
+
+                    print(data)
+                    print("----")
+                    return g
+            return None #this token does not match
+
+        print(self.name)
+        for p,rule in self.rules:
+            print("\t",end="")
+            for token,start in rule:
+                print(token.name,end=" ")
+            print("")
+
+        for p,rule in self.rules:
+            lexim_rules = [token for token, _ in rule if token.is_lexim()]
+            print([r.match(data) for r in lexim_rules])
+
+
     def __str__(self):
         ret_val = self.name + " -> "
         for r in self.rules:
@@ -116,7 +165,6 @@ def create_lexim_map(lexims):
         for rule in lexims[key]:
             lexim_node.rules.append(re.compile(rule))
         ret_val[key] = lexim_node
-    
     return ret_val
 
 
@@ -174,5 +222,7 @@ def create_mapping_mesh(lexim_nodes,map_nodes):
 if __name__ == '__main__':
     l = LanguageMap.from_file("example.lang")
     print(l.rule_mesh)
+    for r in l.rule_mesh:
+        print(r.match("22"))
 
 

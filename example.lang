@@ -9,4 +9,7 @@ equality = =
 statement = <expr><newline>|<open_parenth><expr><closing_parenth>
 expr = <assign>|<equation>
 assign = <name><equality><equation>
-equation = <equation><opperator><equation>|<const>|<name>
+equation =
+				<const>
+				<name>
+				<equation><opperator><equation>|
