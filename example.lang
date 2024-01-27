@@ -1,10 +1,12 @@
-#entry <statement>
-
 name = [a-zA-Z]+
 const = [0-9]+
 opperator = \+|-|/|\*
+newline = \n
+open_parenth = \(
+closing_parenth = \)
+equality = =
 
-statement = <expr>\n|(<expr>)
+statement = <expr><newline>|<open_parenth><expr><closing_parenth>
 expr = <assign>|<equation>
-assign = <name> = <equation>
+assign = <name><equality><equation>
 equation = <equation><opperator><equation>|<const>|<name>
