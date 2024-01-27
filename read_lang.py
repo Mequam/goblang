@@ -8,7 +8,6 @@ class ParseNode:
     def __init__(self,name):
         self.name = name
         self.rules = []
-    
     def __str__(self):
         ret_val = self.name + " -> "
         for r in self.rules:
@@ -32,7 +31,24 @@ class Mappings:
         self.idx = end + 1
 
         return (self._data[start+1:end],start,end)
+class LanguageMap:
+    def __init__(self,map_nodes,entry_node):
+        self.rule_mesh = map_nodes
+        self.entry_node = entry_node
+    
+    @staticmethod
+    def from_file(lang_file_path : str,entry_point : str='statement')->'LanguageMap':
+        data = get_parse_dictionary(lang_file_path)
+        
+        lexims = get_lexims(data)
+        maps = get_mappings(data)
 
+        lexim_nodes = create_lexim_map(lexims)
+        map_nodes = create_rule_map(maps)
+
+        mesh = create_mapping_mesh(lexim_nodes,map_nodes)
+        
+        return LanguageMap(mesh,map_nodes[entry_point])
 #generates a dictionary of rules based on a given .lang file
 #very rudimentary, inteanded for further parsing
 def get_parse_dictionary(path : str):
@@ -156,16 +172,7 @@ def create_mapping_mesh(lexim_nodes,map_nodes):
 
 
 if __name__ == '__main__':
-    print('[*] generating the parse tree')
-    data = get_parse_dictionary("./example.lang")
-    
-    lexims = get_lexims(data)
-    maps = get_mappings(data)
-    print(maps)
+    l = LanguageMap.from_file("example.lang")
+    print(l.rule_mesh)
 
-    lexim_nodes = create_lexim_map(lexims)
-    print([key for key in lexim_nodes])
-    map_nodes = create_rule_map(maps)
-
-    print(create_mapping_mesh(lexim_nodes,map_nodes))
 
