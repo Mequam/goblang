@@ -7,9 +7,19 @@ def remove_comments(data : str)->str:
 
 #single entry in the final parse tree
 class GrammerNode:
-    def __init__(self,token : 'ParseNode',match : re.Match,sub_tokens = []):
+    def __init__(self,
+                 token : 'ParseNode',
+                 match : re.Match,
+                 sub_tokens = [],
+                 data : str = ""
+                 ):
         self.token = token
         self.match = match
+        self.data = data
+        self.sub_tokens = sub_tokens
+    def match_size(self)->int:
+        span = self.match.span()
+        return span[1] - span[0]
 
 #represents an idea that we can place in the parse tree
 class ParseNode:
@@ -23,6 +33,13 @@ class ParseNode:
                 return False
         return True
     
+    def search(self,data)->'re.Match':
+        if not self.is_lexim():
+            return None
+        for r in self.rules:
+            s = r.search(data)
+            if s: return s
+    
     def get_lexims(self):
         if self.is_lexim():
             return [self]
@@ -30,31 +47,97 @@ class ParseNode:
         return ret_val
 
     def match(self,data : str)->'GrammerNode':
+        print("---")
+        print(self.name)
+        print(data)
+        print("---\n")
         #simply match and return if valid
         if self.is_lexim():
             for r in self.rules:
                 match = re.compile("^"+r.pattern+"$").match(data)
                 if match:
                     g = GrammerNode(self,match)
-                    print(self.name + " matched with ")
-                    print(g)
-                    print(r)
-
-                    print(data)
-                    print("----")
                     return g
             return None #this token does not match
 
-        print(self.name)
-        for p,rule in self.rules:
-            print("\t",end="")
-            for token,start in rule:
-                print(token.name,end=" ")
-            print("")
 
-        for p,rule in self.rules:
+        for str_pattern,rule in self.rules:
+
+            print("\t"+str(rule))
+            #match all of the lexims first, then use those to pattern match the remaining
+            #nodes
+            
             lexim_rules = [token for token, _ in rule if token.is_lexim()]
-            print([r.match(data) for r in lexim_rules])
+            
+            if len(lexim_rules) > 0:
+                lexim_matches = []
+                
+                no_match : bool = False
+                
+                for token in lexim_rules:
+                    match = token.search(data)
+                    if match == None: 
+                        #we must match ALL lexims for there
+                        #to be a valid match on this rule
+                        no_match = True
+                        break
+                    lexim_matches.append(match)
+                
+                if no_match: continue
+
+                #for each match that we have incriment the other tokens until we get up to that match
+                data_index = 0
+                token_index = 0
+                lexim_index = 0
+                span = lexim_matches[lexim_index].span()
+                chunk = data[data_index:span[0]]
+                matches = []
+
+                rule_was_matched = True
+                for token,start in rule:
+                    if token.is_lexim():
+                        lexim_grammer_node = GrammerNode(token,lexim_matches[lexim_index],[],data[span[0]:span[1]])
+                        matches.append(lexim_grammer_node)
+                        lexim_index += 1
+                        data_index += lexim_grammer_node.match_size()
+                        if len(lexim_matches) < lexim_index:
+                            span = lexim_matches[lexim_index].span()
+                            chunk = data[data_index:span[0]]
+                        else:
+                            chunk = data[lexim_grammer_node.match.span()[1]+1:]
+                            span = (len(data),0)
+                    else:
+                        print("sliced pattern!")
+                        print(data[data_index:span[0]])
+                        
+                        print("\trecursing!")
+                        g = token.match(data[data_index:span[0]])
+                        if g == None:
+                            rule_was_matched = False
+                            break
+                            
+                        print("\treturning from recursion")
+
+                        data_index += g.match_size()
+                        matches.append(g)
+                
+                if not rule_was_matched or data_index != len(data):
+                    print(f"\t rule_was_matched: {rule_was_matched}")
+                    print(f"\tfailed with dataindex: {data_index}")
+                    continue #move onto checking the next rule
+
+                return GrammerNode(self,re.match('.*',data),matches,data)
+
+        else:
+            print("inalid pattern")
+
+
+
+
+
+
+
+
 
 
     def __str__(self):
@@ -75,11 +158,13 @@ class Mappings:
 
         if not "<" in work_string or not ">" in work_string:
             raise StopIteration
+        
         start = work_string.index("<") + self.idx
         end = work_string.index(">") + self.idx
         self.idx = end + 1
 
         return (self._data[start+1:end],start,end)
+
 class LanguageMap:
     def __init__(self,map_nodes,entry_node):
         self.rule_mesh = map_nodes
@@ -97,7 +182,8 @@ class LanguageMap:
 
         mesh = create_mapping_mesh(lexim_nodes,map_nodes)
         
-        return LanguageMap(mesh,map_nodes[entry_point])
+        return (LanguageMap(mesh,map_nodes[entry_point]),lexim_nodes,map_nodes)
+
 #generates a dictionary of rules based on a given .lang file
 #very rudimentary, inteanded for further parsing
 def get_parse_dictionary(path : str):
@@ -220,9 +306,6 @@ def create_mapping_mesh(lexim_nodes,map_nodes):
 
 
 if __name__ == '__main__':
-    l = LanguageMap.from_file("example.lang")
-    print(l.rule_mesh)
-    for r in l.rule_mesh:
-        print(r.match("22"))
-
-
+    l,lexims,maps = LanguageMap.from_file("example.lang")
+    g = maps['equation'].match("10+20+30")
+    print([str(t.data) for t in g.sub_tokens])
