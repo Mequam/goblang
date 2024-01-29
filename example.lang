@@ -1,7 +1,7 @@
 Semicolon = ;
 EqualSign = \=
 Integer = [0-9]+
-Identifier = [a-zA-Z]+
+Identifier = [a-z]([a-z][a-z])*[&\#]
 opperator = \+|-|/|\*
 decimalPoint = \.
 

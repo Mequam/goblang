@@ -2,7 +2,21 @@ import re
 
 #moves everything after a #
 def remove_comments(data : str)->str:
-    return data.split("#")[0]
+    split_data = data.split("#")
+    ret_val = split_data[0]
+    
+    #back espcape comments
+    for i in range(1,len(split_data)):
+        if len(split_data[i-1]) <= 0:
+            break
+        if split_data[i-1][-1] == "\\":
+            ret_val = ret_val[0:-1] #remove the \
+            ret_val += '#'+split_data[i] #add in the removed data
+        else:
+            #once we hit a comment ignore everything else
+            break
+
+    return ret_val
 
 
 #single entry in the final parse tree
