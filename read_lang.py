@@ -129,8 +129,6 @@ class ParseNode:
                     g = token.match(data)
                     if g != None: 
                         return GrammerNode(self,re.match(".*",data),[g],data)
-                    else:
-                        print("nah, not returning that!")
 
 
 
@@ -305,8 +303,40 @@ def create_mapping_mesh(lexim_nodes,map_nodes):
 
 
 
+def get_token_str(node : 'GrammerNode')->str:
+    if len(node.sub_tokens) == 0:
+        return f"<{node.token.name}>"
+    ret_val = ""
+    for t in node.sub_tokens:
+        ret_val += get_token_str(t)
+    return ret_val
+
+
+def read_without_white(f):
+    d = f.read(1)
+    while d == ' ' or d == '\n':
+        d = f.read(1)
+    return d
 
 if __name__ == '__main__':
-    l,lexims,maps = LanguageMap.from_file("example.lang")
-    g = maps['expr'].match("x=x-2")
-    print(g.get_summary())
+
+    #generate the langauge structure
+    l,lexims,maps = LanguageMap.from_file("example.lang",entry_point ="Statement")
+   
+    f = open('input.txt','r')
+    data = read_without_white(f)
+    while data != "":
+        g = maps['Statement'].match(data)
+        while g == None:
+            d = read_without_white(f)
+            data += d
+            g = maps['Statement'].match(data)
+            if d == "":
+                data = ""
+                break
+        if g != None:
+            print()
+            print(g.get_summary())
+            print(get_token_str(g))
+            data = f.read(1)
+    f.close()
