@@ -55,10 +55,10 @@ class ParseNode:
         return ret_val
 
     def match(self,data : str)->'GrammerNode':
-        print("---")
-        print(self.name)
-        print("'"+data+"'")
-        print("---\n")
+        #print("---")
+        #print(self.name)
+        #print("'"+data+"'")
+        #print("---\n")
         #simply match and return if valid
         if self.is_lexim():
             for r in self.rules:
@@ -69,20 +69,14 @@ class ParseNode:
             return None #this token does not match
 
 
-        print(self.rules)
         for str_pattern,rule in self.rules:
 
-            print("\t"+str(rule))
             #match all of the lexims first, then use those to pattern match the remaining
             #nodes
-            
             lexim_rules = [token for token, _ in rule if token.is_lexim()]
-            
             if len(lexim_rules) > 0:
                 lexim_matches = []
-                
                 no_match : bool = False
-                
                 for token in lexim_rules:
                     match = token.search(data)
                     if match == None: 
@@ -116,30 +110,22 @@ class ParseNode:
                             chunk = data[lexim_grammer_node.match.span()[1]+1:]
                             span = (len(data),0)
                     else:
-                        print("sliced pattern!")
-                        print(data[data_index:span[0]])
-                        
-                        print("\trecursing!")
                         g = token.match(data[data_index:span[0]])
                         if g == None:
                             rule_was_matched = False
                             break
                             
-                        print("\treturning from recursion")
 
                         data_index += g.match_size()
                         matches.append(g)
                 
                 if not rule_was_matched or data_index != len(data):
-                    print(f"\t rule_was_matched: {rule_was_matched}")
-                    print(f"\tfailed with dataindex: {data_index}")
                     continue #move onto checking the next rule
 
                 return GrammerNode(self,re.match('.*',data),matches,data)
 
             else:
                 for token,_ in rule:
-                    print("attempting " + token.name)
                     g = token.match(data)
                     if g != None: 
                         return GrammerNode(self,re.match(".*",data),[g],data)
@@ -322,5 +308,5 @@ def create_mapping_mesh(lexim_nodes,map_nodes):
 
 if __name__ == '__main__':
     l,lexims,maps = LanguageMap.from_file("example.lang")
-    g = maps['expr'].match("x=2")
+    g = maps['expr'].match("x=x-2")
     print(g.get_summary())
