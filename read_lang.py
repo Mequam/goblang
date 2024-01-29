@@ -20,6 +20,14 @@ class GrammerNode:
     def match_size(self)->int:
         span = self.match.span()
         return span[1] - span[0]
+    def get_summary(self,tabs = 0)->str:
+        ret_val = tabs*'|-'+self.token.name + "\n"
+        ret_val += tabs*'| '+self.data + "\n"
+        #ret_val += tabs*'|--'+"-"*3 + "\n"
+        for t in self.sub_tokens:
+            ret_val +=  t.get_summary(tabs+1)
+        
+        return ret_val
 
 #represents an idea that we can place in the parse tree
 class ParseNode:
@@ -49,7 +57,7 @@ class ParseNode:
     def match(self,data : str)->'GrammerNode':
         print("---")
         print(self.name)
-        print(data)
+        print("'"+data+"'")
         print("---\n")
         #simply match and return if valid
         if self.is_lexim():
@@ -61,6 +69,7 @@ class ParseNode:
             return None #this token does not match
 
 
+        print(self.rules)
         for str_pattern,rule in self.rules:
 
             print("\t"+str(rule))
@@ -128,8 +137,14 @@ class ParseNode:
 
                 return GrammerNode(self,re.match('.*',data),matches,data)
 
-        else:
-            print("inalid pattern")
+            else:
+                for token,_ in rule:
+                    print("attempting " + token.name)
+                    g = token.match(data)
+                    if g != None: 
+                        return GrammerNode(self,re.match(".*",data),[g],data)
+                    else:
+                        print("nah, not returning that!")
 
 
 
@@ -307,5 +322,5 @@ def create_mapping_mesh(lexim_nodes,map_nodes):
 
 if __name__ == '__main__':
     l,lexims,maps = LanguageMap.from_file("example.lang")
-    g = maps['equation'].match("10+20+30")
-    print([str(t.data) for t in g.sub_tokens])
+    g = maps['expr'].match("x=2")
+    print(g.get_summary())
