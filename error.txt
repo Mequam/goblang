@@ -1,0 +1,580 @@
+parsing line: semicolon = ;
+
+parsing line: integer = [0-9]+
+
+parsing line: equal = =
+
+parsing line: start = begin
+
+parsing line: end = end
+
+parsing line: id = [az][a-zA-Z0-9]+
+
+parsing line: operator = \+|-
+
+parsing line: 
+
+parsing line: program =  <start><stList><end>
+
+parsing line: stList = <stmt><semicolon><stList>|<stmt><semicolon>
+
+parsing line: expr = <fact><operator><fact>|<fact>
+
+parsing line: stmt = <id><equal><expr>
+
+parsing line: fact = <id>|<integer>
+
+end of the file
+{'semicolon': [';'], 'integer': ['[0-9]+'], 'equal': ['='], 'start': ['begin'], 'end': ['end'], 'id': ['[az][a-zA-Z0-9]+'], 'operator': ['\\+', '-'], 'program': ['<start><stList><end>'], 'stList': ['<stmt><semicolon><stList>', '<stmt><semicolon>'], 'expr': ['<fact><operator><fact>', '<fact>'], 'stmt': ['<id><equal><expr>'], 'fact': ['<id>', '<integer>']}
+lexims{'semicolon': [';'], 'integer': ['[0-9]+'], 'equal': ['='], 'start': ['begin'], 'end': ['end'], 'id': ['[az][a-zA-Z0-9]+'], 'operator': ['\\+', '-']}
+maps{'program': ['<start><stList><end>'], 'stList': ['<stmt><semicolon><stList>', '<stmt><semicolon>'], 'expr': ['<fact><operator><fact>', '<fact>'], 'stmt': ['<id><equal><expr>'], 'fact': ['<id>', '<integer>']}
+creating lexim maps
+;
+[0-9]+
+=
+begin
+end
+[az][a-zA-Z0-9]+
+\+
+-
+created lexim_nodes
+created map nodes
+---
+program
+'b'
+---
+
+lexim_matches
+[]
+be
+---
+program
+'be'
+---
+
+lexim_matches
+[]
+beg
+---
+program
+'beg'
+---
+
+lexim_matches
+[]
+begi
+---
+program
+'begi'
+---
+
+lexim_matches
+[]
+begin
+---
+program
+'begin'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 5), match='begin'>]
+begina
+---
+program
+'begina'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 5), match='begin'>]
+beginaz
+---
+program
+'beginaz'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 5), match='begin'>]
+beginaz=
+---
+program
+'beginaz='
+---
+
+lexim_matches
+[<re.Match object; span=(0, 5), match='begin'>]
+beginaz=5
+---
+program
+'beginaz=5'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 5), match='begin'>]
+beginaz=5;
+---
+program
+'beginaz=5;'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 5), match='begin'>]
+beginaz=5;a
+---
+program
+'beginaz=5;a'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 5), match='begin'>]
+beginaz=5;az
+---
+program
+'beginaz=5;az'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 5), match='begin'>]
+beginaz=5;az=
+---
+program
+'beginaz=5;az='
+---
+
+lexim_matches
+[<re.Match object; span=(0, 5), match='begin'>]
+beginaz=5;az=a
+---
+program
+'beginaz=5;az=a'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 5), match='begin'>]
+beginaz=5;az=az
+---
+program
+'beginaz=5;az=az'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 5), match='begin'>]
+beginaz=5;az=az+
+---
+program
+'beginaz=5;az=az+'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 5), match='begin'>]
+beginaz=5;az=az+1
+---
+program
+'beginaz=5;az=az+1'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 5), match='begin'>]
+beginaz=5;az=az+15
+---
+program
+'beginaz=5;az=az+15'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 5), match='begin'>]
+beginaz=5;az=az+15;
+---
+program
+'beginaz=5;az=az+15;'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 5), match='begin'>]
+beginaz=5;az=az+15;e
+---
+program
+'beginaz=5;az=az+15;e'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 5), match='begin'>]
+beginaz=5;az=az+15;en
+---
+program
+'beginaz=5;az=az+15;en'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 5), match='begin'>]
+beginaz=5;az=az+15;end
+---
+program
+'beginaz=5;az=az+15;end'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 5), match='begin'>, <re.Match object; span=(19, 22), match='end'>]
+data_index 0
+token_index 0
+lexim_index 0
+span (0, 5)
+chunk 
+	matching a lexim node
+	start
+data_index 5
+token_index 0
+lexim_index 1
+span (19, 22)
+chunk az=5;az=az+15;
+---
+stList
+'az=5;az=az+15;'
+---
+
+lexim_matches
+[<re.Match object; span=(4, 5), match=';'>]
+data_index 0
+token_index 0
+lexim_index 0
+span (4, 5)
+chunk az=5
+---
+stmt
+'az=5'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 2), match='az'>, <re.Match object; span=(2, 3), match='='>]
+data_index 0
+token_index 0
+lexim_index 0
+span (0, 2)
+chunk 
+	matching a lexim node
+	id
+data_index 2
+token_index 0
+lexim_index 1
+span (2, 3)
+chunk 
+	matching a lexim node
+	equal
+data_index 3
+token_index 0
+lexim_index 2
+span (4, 0)
+chunk 
+---
+expr
+'5'
+---
+
+lexim_matches
+[]
+---
+fact
+'5'
+---
+
+lexim_matches
+[]
+lexim_matches
+[<re.Match object; span=(0, 1), match='5'>]
+data_index 0
+token_index 0
+lexim_index 0
+span (0, 1)
+chunk 
+	matching a lexim node
+	integer
+data_index 4
+token_index 0
+lexim_index 0
+span (4, 5)
+chunk az=5
+	matching a lexim node
+	semicolon
+data_index 5
+token_index 0
+lexim_index 1
+span (14, 0)
+chunk z=az+15;
+---
+stList
+'az=az+15;'
+---
+
+lexim_matches
+[<re.Match object; span=(8, 9), match=';'>]
+data_index 0
+token_index 0
+lexim_index 0
+span (8, 9)
+chunk az=az+15
+---
+stmt
+'az=az+15'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 2), match='az'>, <re.Match object; span=(2, 3), match='='>]
+data_index 0
+token_index 0
+lexim_index 0
+span (0, 2)
+chunk 
+	matching a lexim node
+	id
+data_index 2
+token_index 0
+lexim_index 1
+span (2, 3)
+chunk 
+	matching a lexim node
+	equal
+data_index 3
+token_index 0
+lexim_index 2
+span (8, 0)
+chunk z+15
+---
+expr
+'az+15'
+---
+
+lexim_matches
+[<re.Match object; span=(2, 3), match='+'>]
+data_index 0
+token_index 0
+lexim_index 0
+span (2, 3)
+chunk az
+---
+fact
+'az'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 2), match='az'>]
+data_index 0
+token_index 0
+lexim_index 0
+span (0, 2)
+chunk 
+	matching a lexim node
+	id
+data_index 2
+token_index 0
+lexim_index 0
+span (2, 3)
+chunk az
+	matching a lexim node
+	operator
+data_index 3
+token_index 0
+lexim_index 1
+span (5, 0)
+chunk 5
+---
+fact
+'15'
+---
+
+lexim_matches
+[]
+lexim_matches
+[<re.Match object; span=(0, 2), match='15'>]
+data_index 0
+token_index 0
+lexim_index 0
+span (0, 2)
+chunk 
+	matching a lexim node
+	integer
+data_index 8
+token_index 0
+lexim_index 0
+span (8, 9)
+chunk az=az+15
+	matching a lexim node
+	semicolon
+data_index 9
+token_index 0
+lexim_index 1
+span (9, 0)
+chunk 
+---
+stList
+''
+---
+
+lexim_matches
+[]
+lexim_matches
+[]
+lexim_matches
+[<re.Match object; span=(8, 9), match=';'>]
+data_index 0
+token_index 0
+lexim_index 0
+span (8, 9)
+chunk az=az+15
+---
+stmt
+'az=az+15'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 2), match='az'>, <re.Match object; span=(2, 3), match='='>]
+data_index 0
+token_index 0
+lexim_index 0
+span (0, 2)
+chunk 
+	matching a lexim node
+	id
+data_index 2
+token_index 0
+lexim_index 1
+span (2, 3)
+chunk 
+	matching a lexim node
+	equal
+data_index 3
+token_index 0
+lexim_index 2
+span (8, 0)
+chunk z+15
+---
+expr
+'az+15'
+---
+
+lexim_matches
+[<re.Match object; span=(2, 3), match='+'>]
+data_index 0
+token_index 0
+lexim_index 0
+span (2, 3)
+chunk az
+---
+fact
+'az'
+---
+
+lexim_matches
+[<re.Match object; span=(0, 2), match='az'>]
+data_index 0
+token_index 0
+lexim_index 0
+span (0, 2)
+chunk 
+	matching a lexim node
+	id
+data_index 2
+token_index 0
+lexim_index 0
+span (2, 3)
+chunk az
+	matching a lexim node
+	operator
+data_index 3
+token_index 0
+lexim_index 1
+span (5, 0)
+chunk 5
+---
+fact
+'15'
+---
+
+lexim_matches
+[]
+lexim_matches
+[<re.Match object; span=(0, 2), match='15'>]
+data_index 0
+token_index 0
+lexim_index 0
+span (0, 2)
+chunk 
+	matching a lexim node
+	integer
+data_index 8
+token_index 0
+lexim_index 0
+span (8, 9)
+chunk az=az+15
+	matching a lexim node
+	semicolon
+data_index 19
+token_index 0
+lexim_index 1
+span (19, 22)
+chunk az=5;az=az+15;
+	matching a lexim node
+	end
+
+program
+beginaz=5;az=az+15;end
+|-start
+| begin
+|-stList
+| az=5;az=az+15;
+|-|-stmt
+| | az=5
+|-|-|-id
+| | | az
+|-|-|-equal
+| | | =
+|-|-|-expr
+| | | 5
+|-|-|-|-fact
+| | | | 5
+|-|-|-|-|-integer
+| | | | | 5
+|-|-semicolon
+| | ;
+|-|-stList
+| | az=az+15;
+|-|-|-stmt
+| | | az=az+15
+|-|-|-|-id
+| | | | az
+|-|-|-|-equal
+| | | | =
+|-|-|-|-expr
+| | | | az+15
+|-|-|-|-|-fact
+| | | | | az
+|-|-|-|-|-|-id
+| | | | | | az
+|-|-|-|-|-operator
+| | | | | +
+|-|-|-|-|-fact
+| | | | | 15
+|-|-|-|-|-|-integer
+| | | | | | 15
+|-|-|-semicolon
+| | | ;
+|-end
+| end
+
+<start><id><equal><integer><semicolon><id><equal><id><operator><integer><semicolon><end>
+---
+program
+'
+'
+---
+
+lexim_matches
+[]
+
+
+---
+program
+'
+'
+---
+
+lexim_matches
+[]

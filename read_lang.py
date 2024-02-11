@@ -99,7 +99,9 @@ class ParseNode:
                         no_match = True
                         break
                     lexim_matches.append(match)
-                
+
+                #print('lexim_matches')
+                #print(lexim_matches)
                 if no_match: continue
 
                 #for each match that we have incriment the other tokens until we get up to that match
@@ -110,14 +112,39 @@ class ParseNode:
                 chunk = data[data_index:span[0]]
                 matches = []
 
+
+
+                #while data_index == span[0]:
+                #    matches.append(GrammerNode(lexim_matches[lexim_index]))
+                #    data_index += span[1]
+                #    lexim_index += 1
+                #    span = lexim_matches[lexim_index].span()
+
+
                 rule_was_matched = True
                 for token,start in rule:
+                    
+                    #print('data_index '  + str(data_index))
+                    #print('token_index ' + str(token_index))
+                    #print('lexim_index ' + str(lexim_index))
+                    #print('span '        + str(span))
+                    #print('chunk '       + str(chunk))
+
                     if token.is_lexim():
-                        lexim_grammer_node = GrammerNode(token,lexim_matches[lexim_index],[],data[span[0]:span[1]])
+                        
+                        #print('\tmatching a lexim node')
+                        #print('\t'+token.name)
+
+                        lexim_grammer_node = GrammerNode(token,
+                                                         lexim_matches[lexim_index],
+                                                         [],
+                                                         data[span[0]:span[1]])
+
                         matches.append(lexim_grammer_node)
                         lexim_index += 1
                         data_index += lexim_grammer_node.match_size()
-                        if len(lexim_matches) < lexim_index:
+                        
+                        if lexim_index < len(lexim_matches):
                             span = lexim_matches[lexim_index].span()
                             chunk = data[data_index:span[0]]
                         else:
@@ -335,22 +362,25 @@ def read_without_white(f):
 if __name__ == '__main__':
 
     #generate the langauge structure
-    l,lexims,maps = LanguageMap.from_file("example.lang",entry_point ="Statement")
-   
+    l,lexims,maps = LanguageMap.from_file("example.lang",entry_point ="program")
+    
     f = open('input.txt','r')
     data = read_without_white(f)
     while data != "":
-        g = maps['Statement'].match(data)
+        g = maps[l.entry_node.name].match(data)
         while g == None:
             d = read_without_white(f)
             data += d
-            g = maps['Statement'].match(data)
+            print(data)
+            g = maps[l.entry_node.name].match(data)
             if d == "":
                 data = ""
                 break
+
+
         if g != None:
-            print()
             print(g.get_summary())
-            print(get_token_str(g))
             data = f.read(1)
+        else:
+            print("invalid data detected, unable to match")
     f.close()

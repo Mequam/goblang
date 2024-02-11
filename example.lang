@@ -1,32 +1,13 @@
-Semicolon = ;
-EqualSign = \=
-Integer = [0-9]+
-Identifier = [a-z]([a-z][a-z])*[&\#]
-opperator = \+|-|/|\*
-decimalPoint = \.
+semicolon = ;
+integer = [0-9]+
+equal = =
+start = begin
+end = end
+id = [az][a-zA-Z0-9]+
+operator = \+|-
 
-Statement = <Expression><Semicolon>
-Expression = <Assign>|<Equation>
-Assign = <Identifier><EqualSign><Equation>
-Equation = 
-				<Equation><opperator><Equation>
-				<Number>
-				<Identifier>
-Decimal = <Integer><decimalPoint><Integer>|<decimalPoint><Integer>
-Number = <Decimal>|<Integer>
-
-
-#name = [a-zA-Z]+
-#const = [0-9]+
-#newline = \n
-#open_parenth = \(
-#closing_parenth = \)
-#equality = =
-#
-#statement = <expr><newline>|<open_parenth><expr><closing_parenth>
-#expr = <assign>|<equation>
-#assign = <name><equality><equation>
-#equation =
-#				<const>
-#				<name>
-#				<equation><opperator><equation>|
+program =  <start><stList><end>
+stList = <stmt><semicolon><stList>|<stmt><semicolon>
+expr = <fact><operator><fact>|<fact>
+stmt = <id><equal><expr>
+fact = <id>|<integer>

@@ -1,0 +1,4 @@
+begin
+az = 5;
+az = az+15
+end

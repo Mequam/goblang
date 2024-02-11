@@ -1,0 +1,46 @@
+end of the file
+program
+beginaz=5;az=az+15;end
+|-start
+| begin
+|-stList
+| az=5;az=az+15;
+|-|-stmt
+| | az=5
+|-|-|-id
+| | | az
+|-|-|-equal
+| | | =
+|-|-|-expr
+| | | 5
+|-|-|-|-fact
+| | | | 5
+|-|-|-|-|-integer
+| | | | | 5
+|-|-semicolon
+| | ;
+|-|-stList
+| | az=az+15;
+|-|-|-stmt
+| | | az=az+15
+|-|-|-|-id
+| | | | az
+|-|-|-|-equal
+| | | | =
+|-|-|-|-expr
+| | | | az+15
+|-|-|-|-|-fact
+| | | | | az
+|-|-|-|-|-|-id
+| | | | | | az
+|-|-|-|-|-operator
+| | | | | +
+|-|-|-|-|-fact
+| | | | | 15
+|-|-|-|-|-|-integer
+| | | | | | 15
+|-|-|-semicolon
+| | | ;
+|-end
+| end
+
