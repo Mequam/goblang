@@ -1,1 +1,1 @@
-beginaz = 5;az = az+15;az==5;end
+beginif(az==2)az=az+2;end

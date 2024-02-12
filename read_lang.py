@@ -80,6 +80,8 @@ class ParseNode:
                 if match:
                     g = GrammerNode(self,match)
                     return g
+            print(self.name)
+            print("did not match this lexim, returning None")
             return None #this token does not match
 
 
@@ -371,7 +373,6 @@ if __name__ == '__main__':
         while g == None:
             d = read_without_white(f)
             data += d
-            print(data)
             g = maps[l.entry_node.name].match(data)
             if d == "":
                 data = ""
@@ -381,6 +382,4 @@ if __name__ == '__main__':
         if g != None:
             print(g.get_summary())
             data = f.read(1)
-        else:
-            print("invalid data detected, unable to match")
     f.close()
