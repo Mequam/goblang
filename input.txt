@@ -1,1 +1,1 @@
-beginif(az==2)az=az+2;end
+begina=3+5;end
