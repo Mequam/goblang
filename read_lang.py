@@ -365,6 +365,7 @@ if __name__ == '__main__':
 
     #generate the langauge structure
     l,lexims,maps = LanguageMap.from_file("example.lang",entry_point ="program")
+    any_match = False
     
     f = open('input.txt','r')
     data = read_without_white(f)
@@ -381,5 +382,9 @@ if __name__ == '__main__':
 
         if g != None:
             print(g.get_summary())
+            any_match = True
             data = f.read(1)
+    
+    if not any_match:
+        print('invalid data, try again!')
     f.close()
