@@ -257,7 +257,8 @@ def get_parse_dictionary(path : str):
 
             last_entry = split_data[0]
         else:
-            print("end of the file")
+            pass
+            #print("end of the file")
         
         #clean up and create lists from the initial data
         return { key.strip():ret_val[key].split("|") for key in ret_val}
@@ -356,10 +357,7 @@ def get_token_str(node : 'GrammerNode')->str:
 
 
 def read_without_white(f):
-    d = f.read(1)
-    while d == ' ' or d == '\n':
-        d = f.read(1)
-    return d
+    return f.read(1)
 
 if __name__ == '__main__':
 
