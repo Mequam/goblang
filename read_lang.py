@@ -34,6 +34,7 @@ class GrammerNode:
     def match_size(self)->int:
         span = self.match.span()
         return span[1] - span[0]
+    
     def get_summary(self,tabs = 0)->str:
         ret_val = tabs*'|-'+self.token.name + "\n"
         ret_val += tabs*'| '+self.data + "\n"
@@ -362,7 +363,7 @@ def read_without_white(f):
 if __name__ == '__main__':
 
     #generate the langauge structure
-    l,lexims,maps = LanguageMap.from_file("example.lang",entry_point ="program")
+    l,lexims,maps = LanguageMap.from_file("example.lang",entry_point ="statement")
     any_match = False
     
     f = open('input.txt','r')
