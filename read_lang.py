@@ -18,6 +18,48 @@ def remove_comments(data : str)->str:
 
     return ret_val
 
+def hide_parenthasis(data : str,**kwargs)->'str':
+
+    open_parenth = kwargs["open_parenth"] if "open_parenth" in kwargs else "["
+    close_parenth = kwargs["close_parenth"] if "close_parenth" in kwargs else "]"
+    replace_string = kwargs["replace_string"] if "replace_string" in kwargs else "P"
+
+    nest_layer = 0
+    was_in = False
+    slices = []
+
+    parenthasis = [   (lidx,letter == open_parenth)
+        for lidx, letter
+        in enumerate(data)
+        if letter in [open_parenth,close_parenth]
+    ]
+
+    removal_indexes = []
+    for lidx,is_open in parenthasis:
+        
+        if nest_layer == 0 and is_open:
+            removal_indexes.append(lidx)
+        elif nest_layer == 1 and not is_open:
+            removal_indexes.append(lidx)
+        elif nest_layer == 0 and not is_open:
+            print(f"unbalenced parenthasy found at index {lidx} :: {data}")
+            quit()
+
+        if is_open: nest_layer += 1
+        else: nest_layer -= 1
+    
+    if nest_layer != 0:
+        print(f"unbalenced parenthasy! :: {data}")
+
+    offset = 0
+    for i in range(0,len(removal_indexes),2):
+        replace = replace_string + str(i)
+        data = data[:removal_indexes[i]+offset] + replace + data[removal_indexes[i+1]+offset+1:]
+        offset += len(replace) + removal_indexes[i] - removal_indexes[i+1] - 1
+    return data
+
+            
+
 
 #single entry in the final parse tree
 class GrammerNode:
@@ -86,7 +128,7 @@ class ParseNode:
             return None #this token does not match
 
 
-        for str_pattern,rule in self.rules:
+        for _,rule in self.rules:
 
             #match all of the lexims first, then use those to pattern match the remaining
             #nodes
