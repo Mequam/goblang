@@ -1,5 +1,13 @@
 import re
 
+"""horrible hacked together wrapper for the match class
+to provide offseting"""
+class MatchWrapper:
+    def __init__(self,match : re.Match,offset : int):
+        self.m = match
+        self.offset = offset
+    def span(self,*args):
+        return [x+self.offset for x in self.m.span(*args)]
 #moves everything after a #
 def remove_comments(data : str)->str:
     split_data = data.split("#")
@@ -52,11 +60,13 @@ def hide_parenthasis(data : str,**kwargs)->'str':
         print(f"unbalenced parenthasy! :: {data}")
 
     offset = 0
+    mapping = []
     for i in range(0,len(removal_indexes),2):
-        replace = replace_string + str(i)
+        replace = "__"+replace_string + str(int(i/2)) + "__"
+        mapping.append(data[1+removal_indexes[i]+offset : removal_indexes[i+1]+offset])
         data = data[:removal_indexes[i]+offset] + replace + data[removal_indexes[i+1]+offset+1:]
         offset += len(replace) + removal_indexes[i] - removal_indexes[i+1] - 1
-    return data
+    return (data,mapping)
 
             
 
@@ -136,14 +146,24 @@ class ParseNode:
             if len(lexim_rules) > 0:
                 lexim_matches = []
                 no_match : bool = False
+                token_search_start = 0
                 for token in lexim_rules:
-                    match = token.search(data)
+                    print(data[token_search_start:])
+                    match = token.search(data[token_search_start:])
                     if match == None: 
+                        print("\tmatch failed on " + data[token_search_start:])
+                        print("\t" + data)
+
+                        print(f"\tfor {token}")
+                        
                         #we must match ALL lexims for there
                         #to be a valid match on this rule
                         no_match = True
                         break
-                    lexim_matches.append(match)
+
+                    lexim_matches.append(MatchWrapper(match, token_search_start))
+                    token_search_start += match.span()[1]
+                print(lexim_matches)
 
                 #print('lexim_matches')
                 #print(lexim_matches)
