@@ -133,8 +133,6 @@ class ParseNode:
                 if match:
                     g = GrammerNode(self,match)
                     return g
-            print(self.name)
-            print("did not match this lexim, returning None")
             return None #this token does not match
 
 
@@ -148,14 +146,8 @@ class ParseNode:
                 no_match : bool = False
                 token_search_start = 0
                 for token in lexim_rules:
-                    print(data[token_search_start:])
                     match = token.search(data[token_search_start:])
                     if match == None: 
-                        print("\tmatch failed on " + data[token_search_start:])
-                        print("\t" + data)
-
-                        print(f"\tfor {token}")
-                        
                         #we must match ALL lexims for there
                         #to be a valid match on this rule
                         no_match = True
@@ -163,7 +155,6 @@ class ParseNode:
 
                     lexim_matches.append(MatchWrapper(match, token_search_start))
                     token_search_start += match.span()[1]
-                print(lexim_matches)
 
                 #print('lexim_matches')
                 #print(lexim_matches)
