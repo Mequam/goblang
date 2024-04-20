@@ -116,7 +116,9 @@ class ParseNode:
         if right_parse:
             for rule in self.rules:
                 potential_matches = [m for m in rule.finditer(data)]
+                print(potential_matches)
                 if len(potential_matches) >= 1:
+                    print(potential_matches[-1])
                     return potential_matches[-1]
         else:
             for r in self.rules:
@@ -137,7 +139,7 @@ class ParseNode:
         print("---\n")
         #simply match and return if valid
         if self.is_lexim():
-            print("hello from lexim land")
+            #print("hello from lexim land")
             for r in self.rules:
                 match = re.compile("^"+r.pattern+"$").match(data)
                 if match:
@@ -149,45 +151,37 @@ class ParseNode:
         for _,rule in self.rules:
             
 
-            print("begin for loop stuff")
+            #print("begin for loop stuff")
 
-            for r in rule:
-                print(r)
             #little bit of python revrese magic
             if self.right_first_parse:
                 rule = list(reversed(rule))
 
-            print("rev")
-            for r in rule:
-                print(r)
 
-            for r in rule:
-                print(r)
-
-            print("end for loop stuff")
+            #print("end for loop stuff")
             #match all of the lexims first, then use those to pattern match the remaining
             #nodes
             lexim_rules = [token for token, _ in rule if token.is_lexim()]
 
+            print([n.name for n in lexim_rules])
             if len(lexim_rules) > 0:
                 lexim_matches = []
                 no_match : bool = False
                 token_search_start = 0
 
-                print("-----")
                 for token in lexim_rules:
 
                     blah = data
                     if self.right_first_parse and token_search_start != 0:
-                        blah = blah[:token_search_start]
+                        blah = blah[:token_search_start+1]
                     else:
                         blah = blah[token_search_start:]
-                    print(f"data: {data}")
+                    
                     print(f"blah:{blah}")
 
                     match = token.search(blah,right_parse = self.right_first_parse)
+                    print(f"match {match}")
 
-                    print(match)
                     if match == None: 
                         #we must match ALL lexims for there
                         #to be a valid match on this rule
@@ -204,7 +198,6 @@ class ParseNode:
                     else:
                         token_search_start += match.span()[1]
 
-                print("-----")
                 #print('lexim_matches')
                 #print(lexim_matches)
                 if no_match: continue
@@ -230,20 +223,18 @@ class ParseNode:
                 #    lexim_index += 1
                 #    span = lexim_matches[lexim_index].span()
 
-                print([s.span() for s in lexim_matches])
-                print("begining analysis for " + str([r for r in rule]))
+                #print([s.span() for s in lexim_matches])
+                #print("begining analysis for " + str([r for r in rule]))
                 rule_was_matched = True
                 for token,start in rule:
                     
-                    print('data_index '  + str(data_index))
-                    print('token_index ' + str(token_index))
-                    print('lexim_index ' + str(lexim_index))
-                    print('span '        + str(span))
+                    #print('data_index '  + str(data_index))
+                    #print('token_index ' + str(token_index))
+                    #print('lexim_index ' + str(lexim_index))
+                    #print('span '        + str(span))
 
                     if token.is_lexim():
                         
-                        print('\tmatching a lexim node')
-                        print('\t'+token.name)
 
                         lexim_grammer_node = GrammerNode(token,
                                                          lexim_matches[lexim_index],
@@ -286,10 +277,8 @@ class ParseNode:
                 return GrammerNode(self,re.match('.*',data),matches,data)
 
             else:
-                print("hello from the bakcwater else")
                 for token,_ in rule:
 
-                    print(token.name)
                     g = token.match(data)
                     if g != None: 
                         return GrammerNode(self,re.match(".*",data),[g],data)
@@ -491,7 +480,6 @@ if __name__ == '__main__':
 
 
         if g != None:
-            print(g.get_summary())
             any_match = True
             data = f.read(1)
     
