@@ -99,7 +99,8 @@ class GrammerNode:
 #represents an idea that we can place in the parse tree
 class ParseNode:
     def __init__(self,name):
-        self.name = name
+        self.right_first_parse = name[0] == '<'
+        self.name = name if not self.right_first_parse else name[1:]
         self.rules = []
     
     def is_lexim(self)->bool:
@@ -108,12 +109,19 @@ class ParseNode:
                 return False
         return True
     
-    def search(self,data)->'re.Match':
+    def search(self,data,**kwargs)->'re.Match':
         if not self.is_lexim():
             return None
-        for r in self.rules:
-            s = r.search(data)
-            if s: return s
+        right_parse = kwargs["right_parse"] if "right_parse" in kwargs else False
+        if right_parse:
+            for rule in self.rules:
+                potential_matches = [m for m in rule.finditer(data)]
+                if len(potential_matches) >= 1:
+                    return potential_matches[-1]
+        else:
+            for r in self.rules:
+                s = r.search(data)
+                if s: return s
     
     def get_lexims(self):
         if self.is_lexim():
@@ -122,12 +130,14 @@ class ParseNode:
         return ret_val
 
     def match(self,data : str)->'GrammerNode':
-        #print("---")
-        #print(self.name)
-        #print("'"+data+"'")
-        #print("---\n")
+        print("---")
+        print(self.name)
+        print(self.right_first_parse)
+        print("'"+data+"'")
+        print("---\n")
         #simply match and return if valid
         if self.is_lexim():
+            print("hello from lexim land")
             for r in self.rules:
                 match = re.compile("^"+r.pattern+"$").match(data)
                 if match:
@@ -137,35 +147,79 @@ class ParseNode:
 
 
         for _,rule in self.rules:
+            
 
+            print("begin for loop stuff")
+
+            for r in rule:
+                print(r)
+            #little bit of python revrese magic
+            if self.right_first_parse:
+                rule = list(reversed(rule))
+
+            print("rev")
+            for r in rule:
+                print(r)
+
+            for r in rule:
+                print(r)
+
+            print("end for loop stuff")
             #match all of the lexims first, then use those to pattern match the remaining
             #nodes
             lexim_rules = [token for token, _ in rule if token.is_lexim()]
+
             if len(lexim_rules) > 0:
                 lexim_matches = []
                 no_match : bool = False
                 token_search_start = 0
+
+                print("-----")
                 for token in lexim_rules:
-                    match = token.search(data[token_search_start:])
+
+                    blah = data
+                    if self.right_first_parse and token_search_start != 0:
+                        blah = blah[:token_search_start]
+                    else:
+                        blah = blah[token_search_start:]
+                    print(f"data: {data}")
+                    print(f"blah:{blah}")
+
+                    match = token.search(blah,right_parse = self.right_first_parse)
+
+                    print(match)
                     if match == None: 
                         #we must match ALL lexims for there
                         #to be a valid match on this rule
                         no_match = True
                         break
 
-                    lexim_matches.append(MatchWrapper(match, token_search_start))
-                    token_search_start += match.span()[1]
+                    lexim_matches.append(MatchWrapper(match,
+                                                      0 
+                                                      if self.right_first_parse else
+                                                      token_search_start))
+                    
+                    if self.right_first_parse:
+                        token_search_start -= match.span()[0]
+                    else:
+                        token_search_start += match.span()[1]
 
+                print("-----")
                 #print('lexim_matches')
                 #print(lexim_matches)
                 if no_match: continue
 
                 #for each match that we have incriment the other tokens until we get up to that match
-                data_index = 0
                 token_index = 0
                 lexim_index = 0
                 span = lexim_matches[lexim_index].span()
-                chunk = data[data_index:span[0]]
+
+                data_index = 0
+
+                if self.right_first_parse:
+                    data_index = None
+
+
                 matches = []
 
 
@@ -176,20 +230,20 @@ class ParseNode:
                 #    lexim_index += 1
                 #    span = lexim_matches[lexim_index].span()
 
-
+                print([s.span() for s in lexim_matches])
+                print("begining analysis for " + str([r for r in rule]))
                 rule_was_matched = True
                 for token,start in rule:
                     
-                    #print('data_index '  + str(data_index))
-                    #print('token_index ' + str(token_index))
-                    #print('lexim_index ' + str(lexim_index))
-                    #print('span '        + str(span))
-                    #print('chunk '       + str(chunk))
+                    print('data_index '  + str(data_index))
+                    print('token_index ' + str(token_index))
+                    print('lexim_index ' + str(lexim_index))
+                    print('span '        + str(span))
 
                     if token.is_lexim():
                         
-                        #print('\tmatching a lexim node')
-                        #print('\t'+token.name)
+                        print('\tmatching a lexim node')
+                        print('\t'+token.name)
 
                         lexim_grammer_node = GrammerNode(token,
                                                          lexim_matches[lexim_index],
@@ -198,21 +252,31 @@ class ParseNode:
 
                         matches.append(lexim_grammer_node)
                         lexim_index += 1
+                        if data_index == None: data_index = 0
                         data_index += lexim_grammer_node.match_size()
                         
                         if lexim_index < len(lexim_matches):
                             span = lexim_matches[lexim_index].span()
-                            chunk = data[data_index:span[0]]
                         else:
-                            chunk = data[lexim_grammer_node.match.span()[1]+1:]
                             span = (len(data),0)
                     else:
-                        g = token.match(data[data_index:span[0]])
+                        #print("BLAH")
+                        chunk = data[data_index:span[0]]
+                        if self.right_first_parse:
+                            chunk = data[span[1]:-data_index]
+                        g = token.match(chunk)
                         if g == None:
+
+                            #print(token.name)
+                            #print(f"scary data: {data}")
+                            #print(data[data_index:span[0]])
+                            #print("blah")
+                            #print("NO MATCH")
                             rule_was_matched = False
                             break
                             
 
+                        if data_index == None: data_index = 0
                         data_index += g.match_size()
                         matches.append(g)
                 
@@ -222,19 +286,13 @@ class ParseNode:
                 return GrammerNode(self,re.match('.*',data),matches,data)
 
             else:
+                print("hello from the bakcwater else")
                 for token,_ in rule:
+
+                    print(token.name)
                     g = token.match(data)
                     if g != None: 
                         return GrammerNode(self,re.match(".*",data),[g],data)
-
-
-
-
-
-
-
-
-
 
     def __str__(self):
         ret_val = self.name + " -> "
@@ -368,7 +426,7 @@ def create_rule_map(maps):
     for key in maps:
         rule_map = ParseNode(key)
         rule_map.rules = [get_rule_mapping_data(rule) for rule in maps[key]]
-        ret_val[key] = rule_map
+        ret_val[key if key[0] != "<" else key[1:]] = rule_map
 
     return ret_val
 
