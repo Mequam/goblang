@@ -114,9 +114,10 @@ class ParseNode:
             return None
         right_parse = kwargs["right_parse"] if "right_parse" in kwargs else False
         if right_parse:
+            print(data)
             for rule in self.rules:
+                print(rule)
                 potential_matches = [m for m in rule.finditer(data)]
-                print(potential_matches)
                 if len(potential_matches) >= 1:
                     print(potential_matches[-1])
                     return potential_matches[-1]
@@ -149,6 +150,7 @@ class ParseNode:
 
 
         for _,rule in self.rules:
+            print(rule)
             
 
             #print("begin for loop stuff")
@@ -163,24 +165,23 @@ class ParseNode:
             #nodes
             lexim_rules = [token for token, _ in rule if token.is_lexim()]
 
-            print([n.name for n in lexim_rules])
+            #print([n.name for n in lexim_rules])
             if len(lexim_rules) > 0:
                 lexim_matches = []
                 no_match : bool = False
                 token_search_start = 0
 
                 for token in lexim_rules:
-
+                    print(token.name)
                     blah = data
                     if self.right_first_parse and token_search_start != 0:
-                        blah = blah[:token_search_start+1]
+                        print("\tblah " + blah)
+                        print("\t" + str(token_search_start))
+                        blah = blah[:-token_search_start]
                     else:
                         blah = blah[token_search_start:]
                     
-                    print(f"blah:{blah}")
-
                     match = token.search(blah,right_parse = self.right_first_parse)
-                    print(f"match {match}")
 
                     if match == None: 
                         #we must match ALL lexims for there
@@ -235,7 +236,7 @@ class ParseNode:
 
                     if token.is_lexim():
                         
-
+                        print(f"grammer: {data[span[0]:span[1]]}")
                         lexim_grammer_node = GrammerNode(token,
                                                          lexim_matches[lexim_index],
                                                          [],
@@ -246,15 +247,25 @@ class ParseNode:
                         if data_index == None: data_index = 0
                         data_index += lexim_grammer_node.match_size()
                         
+                        print("updating span!")
                         if lexim_index < len(lexim_matches):
                             span = lexim_matches[lexim_index].span()
                         else:
-                            span = (len(data),0)
+                            if self.right_first_parse:
+                                span = (0,0)
+                            else:
+                                span = (len(data),0)
                     else:
                         #print("BLAH")
                         chunk = data[data_index:span[0]]
                         if self.right_first_parse:
-                            chunk = data[span[1]:-data_index]
+                            print("\treversed chunk")
+                            print(f"\tdataidx:{data_index}")
+                            print(f"\t{span}")
+                            print(f"\t{data}")
+                            print(f"\t {[span[1],-data_index if data_index != None else None]}")
+                            chunk = data[span[1]:-data_index if data_index != None else None]
+                        print(f"\tchunk:{chunk}")
                         g = token.match(chunk)
                         if g == None:
 
