@@ -58,6 +58,7 @@ def hide_parenthasis(data : str,**kwargs)->'str':
     
     if nest_layer != 0:
         print(f"unbalenced parenthasy! :: {data}")
+        quit()
 
     offset = 0
     mapping = []
