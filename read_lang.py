@@ -447,29 +447,29 @@ def get_token_str(node : 'GrammerNode')->str:
 def read_without_white(f):
     return f.read(1)
 
-if __name__ == '__main__':
-
-    #generate the langauge structure
-    l,lexims,maps = LanguageMap.from_file("example.lang",entry_point ="statement")
-    any_match = False
-    
-    f = open('input.txt','r')
-    data = read_without_white(f)
-    while data != "":
-        g = maps[l.entry_node.name].match(data)
-        while g == None:
-            d = read_without_white(f)
-            data += d
-            g = maps[l.entry_node.name].match(data)
-            if d == "":
-                data = ""
-                break
-
-
-        if g != None:
-            any_match = True
-            data = f.read(1)
-    
-    if not any_match:
-        print('invalid data, try again!')
-    f.close()
+#if __name__ == '__main__':
+#
+#    #generate the langauge structure
+#    l,lexims,maps = LanguageMap.from_file("example.lang",entry_point ="statement")
+#    any_match = False
+#    
+#    f = open('input.txt','r')
+#    data = read_without_white(f)
+#    while data != "":
+#        g = maps[l.entry_node.name].match(data)
+#        while g == None:
+#            d = read_without_white(f)
+#            data += d
+#            g = maps[l.entry_node.name].match(data)
+#            if d == "":
+#                data = ""
+#                break
+#
+#
+#        if g != None:
+#            any_match = True
+#            data = f.read(1)
+#    
+#    if not any_match:
+#        print('invalid data, try again!')
+#    f.close()
