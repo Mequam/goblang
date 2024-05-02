@@ -1,4 +1,5 @@
 import re
+from .errors import ParenthasisError
 
 """horrible hacked together wrapper for the match class
 to provide offseting"""
@@ -51,14 +52,14 @@ def hide_parenthasis(data : str,**kwargs)->'str':
             removal_indexes.append(lidx)
         elif nest_layer == 0 and not is_open:
             print(f"unbalenced parenthasy found at index {lidx} :: {data}")
-            quit()
+            raise ParenthasisError()
 
         if is_open: nest_layer += 1
         else: nest_layer -= 1
     
     if nest_layer != 0:
         print(f"unbalenced parenthasy! :: {data}")
-        quit()
+        raise ParenthasisError()
 
     offset = 0
     mapping = []
